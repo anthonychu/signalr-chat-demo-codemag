@@ -13,9 +13,13 @@
     const messageForm = document.getElementById('message-form');
     const messageBox = document.getElementById('message-box');
     const messages = document.getElementById('messages');
+    let token = '';
+    const options = {
+        accessTokenFactory: () => token
+    };
 
     const connection = new signalR.HubConnectionBuilder()
-        .withUrl("/chat")
+        .withUrl("/chat", options)
         .configureLogging(signalR.LogLevel.Information)
         .build();
     connection.on('newMessage', (sender, messageText) => {
@@ -24,9 +28,11 @@
         newMessage.appendChild(document.createTextNode(`${sender}: ${messageText}`));
         messages.appendChild(newMessage);
     });
-    connection.start()
-        .then(() => console.log('connected!'))
-        .catch(console.error);
+    getToken().then(() => {
+        connection.start()
+            .then(() => console.log('connected!'))
+            .catch(console.error);
+    });
 
     messageForm.addEventListener('submit', ev => {
         ev.preventDefault();
@@ -34,4 +40,21 @@
         connection.invoke('SendMessage', message);
         messageBox.value = '';
     });
+
+    function getToken() {
+        const xhr = new XMLHttpRequest();
+        return new Promise((resolve, reject) => {
+            xhr.onreadystatechange = function() {
+                if (this.readyState !== 4) return;
+                if (this.status == 200) {
+                    token = this.responseText;
+                    resolve(token);
+                } else {
+                    reject(this.statusText);
+                }
+            };
+            xhr.open("GET", "/api/token");
+            xhr.send();
+        });
+    }
 </script>
