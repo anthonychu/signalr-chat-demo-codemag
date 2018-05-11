@@ -89,6 +89,8 @@ namespace SignalRChat
                     policy.RequireClaim(ClaimTypes.NameIdentifier);
                 });
             });
+
+            services.AddSingleton<PresenceTracker>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
