@@ -29,9 +29,21 @@
         messages.appendChild(newMessage);
     });
 
-    connection.start()
-        .then(() => console.log('connected!'))
-        .catch(console.error);
+    connection.onclose(reconnect);
+
+    startConnection();
+
+    function startConnection() {
+        console.log('connecting...');
+        connection.start()
+            .then(() => console.log('connected!'))
+            .catch(reconnect);
+    }
+
+    function reconnect() {
+        console.log('reconnecting...');
+        setTimeout(startConnection, 2000);
+    }
 
     messageForm.addEventListener('submit', ev => {
         ev.preventDefault();
