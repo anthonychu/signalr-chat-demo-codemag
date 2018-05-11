@@ -40,6 +40,7 @@ namespace SignalRChat
                 {
                     options.Conventions.AuthorizeFolder("/Account/Manage");
                     options.Conventions.AuthorizePage("/Account/Logout");
+                    options.Conventions.AuthorizePage("/Index");
                 });
 
             services.AddSignalR();
